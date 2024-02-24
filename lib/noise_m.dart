@@ -6,6 +6,8 @@ import 'package:noise_meter/noise_meter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class NoiseMeterApp extends StatefulWidget {
+
+  static route() => MaterialPageRoute(builder: (_) => const NoiseMeterApp());
   const NoiseMeterApp({super.key});
 
   @override
