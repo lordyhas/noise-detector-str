@@ -38,6 +38,7 @@ dependencies:
   noise_meter: ^5.0.2
   firebase_core: ^2.25.4
   firebase_database: ^10.4.5
+  permission_handler: ^11.3.0
 
 dev_dependencies:
   flutter_test:
