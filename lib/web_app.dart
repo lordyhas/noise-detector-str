@@ -5,6 +5,28 @@ class WebUIApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'noise detector web',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const WebHomePage(),
+    );
+  }
+}
+
+class WebHomePage extends StatefulWidget {
+  const WebHomePage({super.key});
+
+  @override
+  State<WebHomePage> createState() => _WebHomePageState();
+}
+
+class _WebHomePageState extends State<WebHomePage> {
+  @override
+  Widget build(BuildContext context) {
     return const Placeholder();
   }
 }
+
