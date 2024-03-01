@@ -4,6 +4,7 @@ import 'package:circular_seek_bar/circular_seek_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:noise_detector_str/data_sample.dart';
 import 'package:noise_detector_str/noise_m.dart';
 import 'package:noise_meter/noise_meter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -195,6 +196,11 @@ class _MobileHomePageState extends State<MobileHomePage> {
               ElevatedButton(
                 onPressed: _isRecording ? stop : start,
                 child: _isRecording ? const Text("Stop") : const Text("Record") ,
+              ),
+              SizedBox(height: 16.0,),
+              ElevatedButton(
+                onPressed: () => Navigator.push(context,SampleHomePage.route()),
+                child:  const Text("Data") ,
               ),
             ],
           ),

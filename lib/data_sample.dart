@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 class SampleHomePage extends StatefulWidget {
   const SampleHomePage({Key? key}) : super(key: key);
 
+  static route() => MaterialPageRoute(builder: (_) => const SampleHomePage());
+
   @override
   State<SampleHomePage> createState() => _SampleHomePageState();
 }
@@ -39,11 +41,11 @@ class _SampleHomePageState extends State<SampleHomePage> {
   }
   /// ici str | créer une classe ou une methode determinste
   Future<void> init() async {
-    _counterRef = FirebaseDatabase.instance.ref('detect_data');
+    _counterRef = FirebaseDatabase.instance.ref('counter_noise');
 
     final database = FirebaseDatabase.instance;
 
-    _messagesRef = database.ref('noise');
+    _messagesRef = database.ref('message_noise');
 
     database.setLoggingEnabled(false);
 
@@ -60,12 +62,12 @@ class _SampleHomePageState extends State<SampleHomePage> {
     try {
       final counterSnapshot = await _counterRef.get();
 
-      print(
+      debugPrint(
         'Connected to directly configured database and read '
             '${counterSnapshot.value}',
       );
     } catch (err) {
-      print(err);
+      debugPrint("$err");
     }
 
     _counterSubscription = _counterRef.onValue.listen(

@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:noise_detector_str/main.dart';
-import 'package:noise_detector_str/mobile_app.dart';
-import 'package:noise_detector_str/web_app.dart';
+import 'package:noise_detector_str/view/mobile_app.dart';
+import 'package:noise_detector_str/view/web_app.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {

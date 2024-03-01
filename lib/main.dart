@@ -4,11 +4,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
-import 'package:noise_detector_str/web_app.dart';
+import 'package:noise_detector_str/view/web_app.dart';
 
 
 import 'firebase_options.dart';
-import 'mobile_app.dart';
+import 'view/mobile_app.dart';
 
 // Change to false to use live database instance.
 const USE_DATABASE_EMULATOR = false;
