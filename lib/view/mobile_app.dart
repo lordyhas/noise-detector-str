@@ -9,26 +9,18 @@ import 'package:noise_detector_str/noise_m.dart';
 import 'package:noise_meter/noise_meter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../controller/permission_check.dart';
+
 
 class MobileUIApp extends StatelessWidget {
   const MobileUIApp({super.key});
 
-  void requestPermission() async {
-    // You can request multiple permissions at once.
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.location,
-      //Permission.storage,
-      Permission.microphone,
-    ].request();
-    debugPrint("${statuses[Permission.location]}");
 
-    //return statuses;
-  }
 
   // This widget is the root of the mobile application.
   @override
   Widget build(BuildContext context) {
-    requestPermission();
+    PermissionCheck.requestPermission();
     return MaterialApp(
       title: 'noise detector mobile',
       theme: ThemeData(
@@ -197,7 +189,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
                 onPressed: _isRecording ? stop : start,
                 child: _isRecording ? const Text("Stop") : const Text("Record") ,
               ),
-              SizedBox(height: 16.0,),
+              const SizedBox(height: 16.0,),
               ElevatedButton(
                 onPressed: () => Navigator.push(context,SampleHomePage.route()),
                 child:  const Text("Data") ,

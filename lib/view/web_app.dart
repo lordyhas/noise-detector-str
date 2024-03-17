@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:noise_detector_str/view/web_app_ui/dashboard.dart';
 
 class WebUIApp extends StatelessWidget {
   const WebUIApp({super.key});
@@ -11,7 +12,7 @@ class WebUIApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const WebHomePage(),
+      home: const WebDashboard(),
     );
   }
 }

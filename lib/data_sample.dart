@@ -167,9 +167,10 @@ class _SampleHomePageState extends State<SampleHomePage> {
               ),
             ),
           ),
-          ElevatedButton(
-            onPressed: _incrementAsTransaction,
-            child: const Text('Increment as transaction'),
+          const ElevatedButton(
+            onPressed: null,
+            //onPressed: _incrementAsTransaction,
+            child: Text('Increment as transaction'),
           ),
           ListTile(
             leading: Checkbox(
