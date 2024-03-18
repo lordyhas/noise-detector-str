@@ -1,13 +1,13 @@
 
 class NoiseModel {
-  final int id;
+  final dynamic id;
   final String dateTime;
-  final String noiseValue;
+  final double noiseValue;
   final String deviceName;
   final Map<String, String> location;
 
 //<editor-fold desc="Data Methods">
-   NoiseModel({
+   const NoiseModel({
     required this.id,
     required this.dateTime,
     required this.noiseValue,
@@ -15,7 +15,7 @@ class NoiseModel {
     required this.location,
   });
 
-  bool? selected = false;
+
 
   @override
   bool operator ==(Object other) =>
@@ -48,9 +48,9 @@ class NoiseModel {
   }
 
   NoiseModel copyWith({
-    int? id,
+    id,
     String? dateTime,
-    String? noiseValue,
+    double? noiseValue,
     String? deviceName,
     Map<String, String>? location,
   }) {
@@ -75,9 +75,9 @@ class NoiseModel {
 
   factory NoiseModel.fromMap(Map<String, dynamic> map) {
     return NoiseModel(
-      id: map['id'] as int,
+      id: map['id'],
       dateTime: map['dateTime'] as String,
-      noiseValue: map['noiseValue'] as String,
+      noiseValue: map['noiseValue'] as double,
       deviceName: map['deviceName'] as String,
       location: map['location'] as Map<String, String>,
     );
