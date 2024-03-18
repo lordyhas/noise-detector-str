@@ -128,7 +128,7 @@ class _DatatableViewState extends State<DatatableView> {
                     label: const Text('Sex'),
                     //numeric: true,
                     onSort: (int columnIndex, bool ascending) => _sort<String>(
-                        (NoiseModel d) => d.noiseValue, columnIndex, ascending),
+                        (NoiseModel d) => d.noiseValue.toString(), columnIndex, ascending),
                   ),
                   DataColumn(
                     label: const Text('Speciality'),
@@ -180,20 +180,20 @@ class DoctorDataSource extends DataTableSource {
     final NoiseModel noise = _doctors[index];
     return DataRow.byIndex(
       index: index,
-      selected: noise.selected!,
+      selected: false, //noise.selected!,
       onSelectChanged: (bool? value) {
-        if (noise.selected != value) {
+        /*if (noise.selected != value) {
           _selectedCount += value! ? 1 : -1;
           assert(_selectedCount >= 0);
           noise.selected = value;
           notifyListeners();
-        }
+        }*/
       },
       cells: <DataCell>[
         DataCell(
           Text("${noise.deviceName} "),
         ),
-        DataCell(Text(noise.noiseValue)),
+        DataCell(Text(noise.noiseValue.toString())),
         DataCell(Text(noise.dateTime)),
       ],
     );
@@ -210,7 +210,7 @@ class DoctorDataSource extends DataTableSource {
 
   void selectAll(bool? checked) {
     for (final NoiseModel noise in _doctors) {
-      noise.selected = checked;
+      //noise.selected = checked;
     }
     _selectedCount = checked! ? _doctors.length : 0;
     notifyListeners();
