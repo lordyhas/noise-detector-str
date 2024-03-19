@@ -39,9 +39,9 @@ class RealtimeDataController {
   FirebaseException? get error => _error;
 
   Future<void> init({
-    required void Function(DatabaseEvent event) onCounterChanged,
-    required void Function(FirebaseException exception,[String type]) onError,
-    void Function(DatabaseEvent event)? onMessageReceived,
+    void Function(DatabaseEvent event)? onCounterChanged,
+    void Function(FirebaseException exception, String? type)? onError,
+    required void Function(DatabaseEvent event)? onMessageReceived,
   }) async {
 
     if (!kIsWeb) {
@@ -50,31 +50,20 @@ class RealtimeDataController {
 
     initialized = true;
 
-    try {
-      final counterSnapshot = await _alertCounterRef.get();
-
-      debugPrint(
-        'Connected to directly configured database and read '
-            '${counterSnapshot.value}',
-      );
-    } catch (err) {
-      debugPrint("$err");
-    }
-
     _counterSubscription = _alertCounterRef.onValue.listen(
           (DatabaseEvent event) {
           _error = null;
           //_counter = (event.snapshot.value ?? 0) as int;
-          onCounterChanged(event);
+          onCounterChanged!(event);
       },
       onError: (Object o) {
         final error = o as FirebaseException;
-        onError(error, "Counter Error");
+        onError!(error, "Counter Error");
         _error = error;
       },
     );
-
-    final messagesQuery = _messagesRef.limitToLast(10);
+    // limit the number of response to one instance only
+    final messagesQuery = _messagesRef.limitToLast(1);
 
     _messagesSubscription = messagesQuery.onChildAdded.listen(
           (DatabaseEvent event) {
@@ -82,12 +71,13 @@ class RealtimeDataController {
             if(kDebugMode){
               chrono.stop();
               debugPrint('Noise saved in db: ${event.snapshot.value}');
-              debugPrint('##### Temps d\'ecoulé: ${chrono.elapsedMilliseconds} ms');
+              debugPrint('##### Temps d\'ecoulé (ms): ${chrono.elapsedMilliseconds} milli sec');
+              debugPrint('##### Temps d\'ecoulé: ${chrono.elapsedMicroseconds} Micro sec');
             }
           },
       onError: (Object o) {
         final error = o as FirebaseException;
-        onError(error, "Message Error");
+        onError!(error, "Message Error");
         _error = error;
         if (kDebugMode) {
           print('Error: ${error.code} ${error.message}');
@@ -102,35 +92,15 @@ class RealtimeDataController {
   }
 
   Future<void> sendMessage(NoiseModel data) async {
-    await _alertCounterRef.set(ServerValue.increment(1));
-
+    if (kDebugMode) {
+      chrono.start();
+      print("*********** START CHRONO *********************");
+    }
     await _messagesRef
         .push()
         .set(data.toMap());
-        //.set(<String, String>{_kTestKey: '$_kTestValue $_counter'});
-    if (kDebugMode) {
-      chrono.start();
-    }
+    await _alertCounterRef.set(ServerValue.increment(1));
   }
-
-  /*Future<void> _incrementAsTransaction() async {
-    try {
-      final transactionResult = await _alertCounterRef.runTransaction((mutableData) {
-        return Transaction.success((mutableData as int? ?? 0) + 1);
-      });
-
-      if (transactionResult.committed) {
-        final newMessageRef = _messagesRef.push();
-        await newMessageRef.set(<String, String>{
-          ///_kTestKey: '$_kTestValue ${transactionResult.snapshot.value}',
-        });
-      }
-    } on FirebaseException catch (e) {
-      if (kDebugMode) {
-        print(e.message);
-      }
-    }
-  }*/
 
   Future<void> deleteMessage(DataSnapshot snapshot) async {
     final messageRef = _messagesRef.child(snapshot.key!);
