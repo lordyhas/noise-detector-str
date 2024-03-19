@@ -9,7 +9,8 @@ class WebUIApp extends StatelessWidget {
     return MaterialApp(
       title: 'noise detector web',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        brightness: Brightness.dark,
+        //colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: const WebDashboard(),
