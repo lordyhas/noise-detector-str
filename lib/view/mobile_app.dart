@@ -1,21 +1,28 @@
 import 'dart:async';
 
 import 'package:circular_seek_bar/circular_seek_bar.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:nanoid/async.dart';
 import 'package:noise_detector_str/data_sample.dart';
+import 'package:noise_detector_str/model/NoiseModel.dart';
 import 'package:noise_detector_str/noise_m.dart';
 import 'package:noise_meter/noise_meter.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:uuid/uuid.dart';
+import 'package:uuid/v1.dart';
 
+import '../controller/gps.dart';
 import '../controller/permission_check.dart';
+import '../controller/realtime_db_controller.dart';
 
 
 class MobileUIApp extends StatelessWidget {
   const MobileUIApp({super.key});
-
-
 
   // This widget is the root of the mobile application.
   @override
@@ -41,6 +48,8 @@ class MobileHomePage extends StatefulWidget {
 
 class _MobileHomePageState extends State<MobileHomePage> {
 
+  RealtimeDataController realtimeData = RealtimeDataController();
+
   bool _isRecording = false;
   NoiseReading? _latestReading;
   StreamSubscription<NoiseReading>? _noiseSubscription;
@@ -52,6 +61,14 @@ class _MobileHomePageState extends State<MobileHomePage> {
   @override
   void initState() {
     super.initState();
+    realtimeData.init(
+        onMessageReceived: (event){
+          print("############## RECEIVED ##############");
+          //showDialog(context: context, builder: builder)
+        },
+        onError: (error, String? message){},
+        onCounterChanged: (event){}
+    );
     noiseMeter = NoiseMeter();
   }
 
@@ -61,27 +78,52 @@ class _MobileHomePageState extends State<MobileHomePage> {
     super.dispose();
   }
 
-  void onData(NoiseReading noiseReading) =>
-      setState(() => _latestReading = noiseReading);
+  void onData(NoiseReading noiseReading) {
+    setState(() => _latestReading = noiseReading);
+
+    checkDisturbingNoise(_latestReading?.meanDecibel);
+  }
+
 
   void onError(Object error) {
-    print(error);
+    if (kDebugMode) {
+      print(error);
+    }
     stop();
   }
 
+  void checkDisturbingNoise(double? value) async {
+    AndroidDeviceInfo androidInfo = await DeviceInfoPlugin().androidInfo;
+    Position position = await GPSLocation.myCurrentPosition();
+
+    double noise = getNoisedB(value);
+    if (noise > 60){
+      stop();
+      realtimeData.sendMessage(NoiseModel(
+        id: const Uuid().v1(),
+        dateTime: DateTime.now().toString(),
+        noiseValue: noise,
+        deviceName: "${androidInfo.model} - ${androidInfo.serialNumber}",
+        location: <String, String>{
+          "latitude":"${position.latitude}",
+          "longitude":"${position.longitude}",
+          "state":"", "city":"", "address":""
+        },)
+      );
+    }
+  }
+
+
   double getNoisedB(double? noise){
-   if(noise == null || noise.isInfinite) {
-     return 0.0;
-   }
-    return noise;
+    /// When we're not connected to the microphone we get some null value
+    /// and when we start measure the micro send us -inf as first value
+    return noise == null || noise.isInfinite ? 0.0 : noise;
   }
 
 
   /// Start noise sampling.
   Future<void> start() async {
     // Create a noise meter, if not already done.
-
-
     // Listen to the noise stream.
     _noiseSubscription = noiseMeter.noise.listen(onData, onError: onError);
     setState(() => _isRecording = true);
@@ -98,10 +140,13 @@ class _MobileHomePageState extends State<MobileHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Noise detector"), // Where noise ?
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: const Text("Noise detector",
+          style: TextStyle(color: Colors.white),
+        ), // Where noise ?
         actions: [
           IconButton(
+            color: Colors.white,
             onPressed: (){},
             icon: !_isRecording
                 ? const Icon(Icons.mic_off)
@@ -186,14 +231,23 @@ class _MobileHomePageState extends State<MobileHomePage> {
                   ]),
               ),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 64.0),
+                  backgroundColor: Colors.deepPurple,
+
+                ),
                 onPressed: _isRecording ? stop : start,
-                child: _isRecording ? const Text("Stop") : const Text("Record") ,
+                child: Text(_isRecording ? "Stop" : "Record",
+                  style: const TextStyle(color: Colors.white),
+                )
               ),
               const SizedBox(height: 16.0,),
+              const Spacer(),
               ElevatedButton(
                 onPressed: () => Navigator.push(context,SampleHomePage.route()),
-                child:  const Text("Data") ,
+                child:  const Text("Show data") ,
               ),
+              const SizedBox(height: 32.0,),
             ],
           ),
         ),
