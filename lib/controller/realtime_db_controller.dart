@@ -27,7 +27,7 @@ class RealtimeDataController {
     //this.database = FirebaseDatabase.instance,
 
   }):
-        //database = FirebaseDatabase.instance,
+
         _alertCounterRef = FirebaseDatabase.instance.ref(refName).child("alert_counter"),
         _messagesRef = FirebaseDatabase.instance.ref(refName).child('info_noise'),
         _error = null ;
@@ -44,9 +44,7 @@ class RealtimeDataController {
     required void Function(DatabaseEvent event)? onMessageReceived,
   }) async {
 
-    if (!kIsWeb) {
-      await _alertCounterRef.keepSynced(true);
-    }
+    //if (!kIsWeb) await _alertCounterRef.keepSynced(true);
 
     initialized = true;
 
@@ -94,11 +92,9 @@ class RealtimeDataController {
   Future<void> sendMessage(NoiseModel data) async {
     if (kDebugMode) {
       chrono.start();
-      print("*********** START CHRONO *********************");
+      print("************* START CHRONO *********************");
     }
-    await _messagesRef
-        .push()
-        .set(data.toMap());
+    await _messagesRef.push().set(data.toMap());
     await _alertCounterRef.set(ServerValue.increment(1));
   }
 
