@@ -11,8 +11,9 @@ import '../model/NoiseModel.dart';
 class RealtimeDataController {
   late final DatabaseReference _alertCounterRef;
   late final DatabaseReference _messagesRef;
-  late StreamSubscription<DatabaseEvent> _counterSubscription;
-  late StreamSubscription<DatabaseEvent> _messagesSubscription;
+  late final DatabaseReference _responseWebRef;
+  //late StreamSubscription<DatabaseEvent> _counterSubscription;
+  late StreamSubscription<DatabaseEvent> _receiveMessagesSubscription;
   FirebaseException? _error;
 
   final FirebaseDatabase database = FirebaseDatabase.instance;
@@ -25,10 +26,7 @@ class RealtimeDataController {
   RealtimeDataController({
     String refName = "detect_data",
     //this.database = FirebaseDatabase.instance,
-
-  }):
-
-        _alertCounterRef = FirebaseDatabase.instance.ref(refName).child("alert_counter"),
+  }):   _alertCounterRef = FirebaseDatabase.instance.ref(refName).child("alert_counter"),
         _messagesRef = FirebaseDatabase.instance.ref(refName).child('info_noise'),
         _error = null ;
 
@@ -48,7 +46,7 @@ class RealtimeDataController {
 
     initialized = true;
 
-    _counterSubscription = _alertCounterRef.onValue.listen(
+    /*_counterSubscription = _alertCounterRef.onValue.listen(
           (DatabaseEvent event) {
           _error = null;
           //_counter = (event.snapshot.value ?? 0) as int;
@@ -59,19 +57,22 @@ class RealtimeDataController {
         onError!(error, "Counter Error");
         _error = error;
       },
-    );
-    // limit the number of response to one instance only
-    final messagesQuery = _messagesRef.limitToLast(1);
+    );*/
 
-    _messagesSubscription = messagesQuery.onChildAdded.listen(
+
+    // limit the number of response to one instance only
+    //final responseQuery = _responseWebRef.limitToLast(1);
+    final responseQuery = _messagesRef.limitToLast(1);
+
+    _receiveMessagesSubscription = responseQuery.onChildAdded.listen(
           (DatabaseEvent event) {
-            onMessageReceived!(event);
             if(kDebugMode){
               chrono.stop();
               debugPrint('Noise saved in db: ${event.snapshot.value}');
               debugPrint('##### Temps d\'ecoulé (ms): ${chrono.elapsedMilliseconds} milli sec');
               debugPrint('##### Temps d\'ecoulé: ${chrono.elapsedMicroseconds} Micro sec');
             }
+            onMessageReceived!(event);
           },
       onError: (Object o) {
         final error = o as FirebaseException;
@@ -85,8 +86,8 @@ class RealtimeDataController {
   }
 
   void close(){
-    _messagesSubscription.cancel();
-    _counterSubscription.cancel();
+    _receiveMessagesSubscription.cancel();
+    //_counterSubscription.cancel();
   }
 
   Future<void> sendMessage(NoiseModel data) async {
