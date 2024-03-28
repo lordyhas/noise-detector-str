@@ -48,7 +48,7 @@ dependencies:
   geolocator: ^11.0.0
   flutter_bloc : any
   uuid: ^4.3.3
-  nanoid: ^1.0.0
+  #nanoid: ^1.0.0
   device_info_plus: ^9.1.2
 
 dev_dependencies:
