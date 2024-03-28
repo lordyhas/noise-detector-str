@@ -2,19 +2,13 @@ import 'dart:async';
 
 import 'package:circular_seek_bar/circular_seek_bar.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:nanoid/async.dart';
-import 'package:noise_detector_str/data_sample.dart';
 import 'package:noise_detector_str/model/NoiseModel.dart';
-import 'package:noise_detector_str/noise_m.dart';
 import 'package:noise_meter/noise_meter.dart';
-import 'package:permission_handler/permission_handler.dart';
+
 import 'package:uuid/uuid.dart';
-import 'package:uuid/v1.dart';
 
 import '../controller/mobile_controller/gps.dart';
 import '../controller/mobile_controller/permission_check.dart';
@@ -99,7 +93,8 @@ class _MobileHomePageState extends State<MobileHomePage> {
     double noise = getNoisedB(value);
     if (noise > 60){
       stop();
-      realtimeData.sendMessage(NoiseModel(
+      // send all information as NoiseModel to the server
+      await realtimeData.sendMessage(NoiseModel(
         id: const Uuid().v1(),
         dateTime: DateTime.now().toString(),
         noiseValue: noise,
@@ -243,9 +238,9 @@ class _MobileHomePageState extends State<MobileHomePage> {
               ),
               const SizedBox(height: 16.0,),
               const Spacer(),
-              ElevatedButton(
+              const ElevatedButton(
                 onPressed: null, // () => Navigator.push(context,SampleHomePage.route()),
-                child:  const Text("Show data") ,
+                child:  Text("Show data") ,
               ),
               const SizedBox(height: 32.0,),
             ],
