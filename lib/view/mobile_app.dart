@@ -16,9 +16,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
 import 'package:uuid/v1.dart';
 
-import '../controller/gps.dart';
-import '../controller/permission_check.dart';
-import '../controller/realtime_db_controller.dart';
+import '../controller/mobile_controller/gps.dart';
+import '../controller/mobile_controller/permission_check.dart';
+import '../controller/mobile_controller/realtime_db_controller.dart';
 
 
 class MobileUIApp extends StatelessWidget {
@@ -244,7 +244,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
               const SizedBox(height: 16.0,),
               const Spacer(),
               ElevatedButton(
-                onPressed: () => Navigator.push(context,SampleHomePage.route()),
+                onPressed: null, // () => Navigator.push(context,SampleHomePage.route()),
                 child:  const Text("Show data") ,
               ),
               const SizedBox(height: 32.0,),

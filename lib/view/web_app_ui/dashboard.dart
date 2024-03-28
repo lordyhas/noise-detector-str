@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:noise_detector_str/model/NoiseModel.dart';
 import 'package:utils_component/utils_component.dart';
 
-import '../../controller/realtime_db_controller.dart';
+import '../../controller/mobile_controller/realtime_db_controller.dart';
 import '../background_font.dart';
 import 'datatable_view.dart';
 

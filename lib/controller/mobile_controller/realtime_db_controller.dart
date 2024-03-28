@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 
-import '../model/NoiseModel.dart';
+import '../../model/NoiseModel.dart';
 
 
 class RealtimeDataController {
@@ -41,27 +41,8 @@ class RealtimeDataController {
     void Function(FirebaseException exception, String? type)? onError,
     required void Function(DatabaseEvent event)? onMessageReceived,
   }) async {
-
-    //if (!kIsWeb) await _alertCounterRef.keepSynced(true);
-
     initialized = true;
 
-    /*_counterSubscription = _alertCounterRef.onValue.listen(
-          (DatabaseEvent event) {
-          _error = null;
-          //_counter = (event.snapshot.value ?? 0) as int;
-          onCounterChanged!(event);
-      },
-      onError: (Object o) {
-        final error = o as FirebaseException;
-        onError!(error, "Counter Error");
-        _error = error;
-      },
-    );*/
-
-
-    // limit the number of response to one instance only
-    //final responseQuery = _responseWebRef.limitToLast(1);
     final responseQuery = _messagesRef.limitToLast(1);
 
     _receiveMessagesSubscription = responseQuery.onChildAdded.listen(

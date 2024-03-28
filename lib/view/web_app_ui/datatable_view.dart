@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
-import 'package:noise_detector_str/controller/realtime_db_controller.dart';
 import 'package:noise_detector_str/model/NoiseModel.dart';
 import 'package:noise_meter/noise_meter.dart';
+import '../../controller/mobile_controller/realtime_db_controller.dart';
 import 'table_data_view/data.csv.dart';
 
 
