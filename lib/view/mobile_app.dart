@@ -117,7 +117,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
 
 
   /// Start noise sampling.
-  Future<void> start() async {
+  Future<void> startRecording() async {
     // Create a noise meter, if not already done.
     // Listen to the noise stream.
     _noiseSubscription = noiseMeter.noise.listen(onData, onError: onError);
@@ -231,7 +231,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
                   backgroundColor: Colors.deepPurple,
 
                 ),
-                onPressed: _isRecording ? stop : start,
+                onPressed: _isRecording ? stop : startRecording,
                 child: Text(_isRecording ? "Stop" : "Record",
                   style: const TextStyle(color: Colors.white),
                 )
@@ -249,7 +249,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: _isRecording ? Colors.red : Colors.green,
-        onPressed: _isRecording ? stop : start,
+        onPressed: _isRecording ? stop : startRecording,
         child: _isRecording ? const Icon(Icons.stop) : const Icon(Icons.mic),
       ),
 
