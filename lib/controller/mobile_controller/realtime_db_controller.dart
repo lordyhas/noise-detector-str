@@ -80,8 +80,8 @@ class RealtimeDataController {
     await _alertCounterRef.set(ServerValue.increment(1));
   }
 
-  Future<void> deleteMessage(DataSnapshot snapshot) async {
-    final messageRef = _messagesRef.child(snapshot.key!);
-    await messageRef.remove();
+  void deleteMessage(DataSnapshot snapshot) async {
+    final ref = _messagesRef.child(snapshot.key!);
+    await ref.remove();
   }
 }
