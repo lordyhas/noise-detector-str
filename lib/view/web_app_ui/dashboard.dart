@@ -53,53 +53,7 @@ class _WebDashboardState extends State<WebDashboard> {
         backgroundColor: Colors.transparent,
         //backgroundColor: AppColor.homePageBackground,
         appBar: AppBar(title: const Text('Admin Dashboard'),),
-        body: Center(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            constraints: const BoxConstraints(maxWidth: 1280),
-            child: FirebaseAnimatedList(
-              key: const ValueKey<bool>(false),
-              query: realtimeData.messagesRef,
-              reverse: false,
-              controller: null,
-              itemBuilder: (context, snapshot, animation, index) {
-                /*final map = Map<String, String>.from(snapshot.value.map((key, value) {
-                  return MapEntry(key, value.toString());
-                }));*/
-                if(snapshot.value is Map){
-                  Map<String, dynamic> linkedMap = Map<String, dynamic>.from(snapshot.value as Map);
-
-                  Map<String, dynamic> map = <String, dynamic>{};
-
-                  print("########### Type : ${map.runtimeType}");
-                  print(map);
-
-                  linkedMap.forEach((key, value) {
-                    map[key] = value;
-                  });
-                  //var noise = NoiseModel.fromMap(map);
-                  return SizeTransition(
-                    sizeFactor: animation,
-                    child: ListTile(
-                      trailing: IconButton(
-                        onPressed: () {}, //=> _deleteMessage(snapshot),
-                        icon: const Icon(Icons.delete),
-                      ),
-                      title: Text('$index: ${snapshot.value}'),
-                      subtitle: const Text(""),
-                    ),
-                  );
-                }
-
-                return const Center(child: CircularProgressIndicator());
-
-              },
-            ),
-          ),
-        ),
-
-
-        /*Scrollbar(
+        body: Scrollbar(
           controller: scrollController,
           child: SingleChildScrollView(
             controller: scrollController,
@@ -114,6 +68,7 @@ class _WebDashboardState extends State<WebDashboard> {
                   children: [
                     //const SizedBox(height: 32.0,),
                     //const H1("MySpace"),
+
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 8.0),
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -262,7 +217,7 @@ class _WebDashboardState extends State<WebDashboard> {
                                     children: [
                                       Spacer(),
                                       Text(
-                                        "Femmmes",
+                                        "Verifier",
                                         style: TextStyle(
                                           fontSize: 20,
                                           color: Colors.white,
@@ -295,7 +250,7 @@ class _WebDashboardState extends State<WebDashboard> {
                                     children: [
                                       Spacer(),
                                       Text(
-                                        "Docteurs",
+                                        "Voir tout",
                                         style: TextStyle(
                                           fontSize: 20,
                                           color: Colors.white,
@@ -311,6 +266,7 @@ class _WebDashboardState extends State<WebDashboard> {
                         ],
                       ),
                     ),
+
                     //const SizedBox(height: 16.0,),
                     Container(
                       //constraints: const BoxConstraints(maxHeight: 200),
@@ -431,6 +387,7 @@ class _WebDashboardState extends State<WebDashboard> {
                                   decoration: BoxDecoration(
                                     color: Colors.black12,
                                     borderRadius: BorderRadius.circular(20),
+
                                   ),
                                   child: SizedBox(
                                     width: boxWidth,
@@ -542,7 +499,8 @@ class _WebDashboardState extends State<WebDashboard> {
                       ),
 
                       child: SizedBox(
-
+                        //height: 300,
+                        height:  Responsive.of(context).size.width > 1363 ? 520 : 320,
                         child: Column(
                           children: [
                             //const SizedBox(height: 1, child: Expanded(child: SizedBox(width: 10,),),),
@@ -555,25 +513,59 @@ class _WebDashboardState extends State<WebDashboard> {
                               ),
                             ),
 
-                            /*Flexible(
+                            Flexible(
                               child: FirebaseAnimatedList(
                                 key: const ValueKey<bool>(false),
-                                query: realtimeData.messagesRef,
+                                query: realtimeData.messagesRef.limitToLast(5),
                                 reverse: false,
+                                //controller: null,
                                 itemBuilder: (context, snapshot, animation, index) {
-                                  return SizeTransition(
-                                    sizeFactor: animation,
-                                    child: ListTile(
-                                      trailing: IconButton(
-                                        onPressed: () {}, //=> _deleteMessage(snapshot),
-                                        icon: const Icon(Icons.delete),
+                                  /*final map = Map<String, String>.from(snapshot.value.map((key, value) {
+                                    return MapEntry(key, value.toString());
+                                  }));*/
+                                  if(snapshot.value is Map){
+                                    Map<String, dynamic> linkedMap = Map<String, dynamic>.from(snapshot.value as Map);
+
+                                    Map<String, dynamic> map = <String, dynamic>{};
+
+                                    //print("########### Type : ${map.runtimeType}");
+                                    //print(map);
+
+                                    linkedMap.forEach((key, value) {
+                                      map[key] = value;
+                                    });
+                                    var noise = NoiseModel.fromMap(map);
+                                    return SizeTransition(
+                                      sizeFactor: animation,
+                                      child: Container(
+                                        margin: const EdgeInsets.symmetric(vertical: 4.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black54,
+                                          borderRadius: BorderRadius.circular(10),
+
+                                        ),
+                                        child: ListTile(
+                                          trailing: IconButton(
+                                            onPressed: () => realtimeData.deleteMessage(snapshot),
+                                            icon: Icon(Icons.delete),
+                                            hoverColor: Colors.red,
+                                          ),
+                                          leading: Text("${index+1}",
+                                          style: const TextStyle(fontSize: 20),),
+                                          title: Text(noise.deviceName),
+                                          subtitle: Text("\t Valeur : ${noise.noiseValue.toStringAsFixed(3)} dB\n"
+                                              "\t ${DateTime.tryParse(noise.dateTime)} "),
+                                        ),
                                       ),
-                                      title: Text('$index: ${snapshot.value}'),
-                                    ),
-                                  );
+                                    );
+                                  }
+
+                                  return const Center(child: CircularProgressIndicator());
+
                                 },
                               ),
-                            ),*/
+                            ),
+
                             /*Wrap(
                               runAlignment: WrapAlignment.start,
                               alignment: WrapAlignment.start,
@@ -591,7 +583,7 @@ class _WebDashboardState extends State<WebDashboard> {
               ),
             ),
           ),
-        ),*/
+        ),
       ),
     );
   }
