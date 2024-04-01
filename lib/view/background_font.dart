@@ -12,7 +12,7 @@ class BackgroundCover extends StatelessWidget {
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: Image.asset(
-        kIsWeb?"assets/img/bg_image2.jpg" : "assets/img/bg_image3.jpg",
+        kIsWeb?"assets/img/bg_material_1.jpg" : "assets/img/bg_image3.jpg",
         fit: BoxFit.cover,
       ),
     );
