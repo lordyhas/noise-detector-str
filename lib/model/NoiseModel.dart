@@ -4,7 +4,7 @@ class NoiseModel {
   final String dateTime;
   final double noiseValue;
   final String deviceName;
-  final Map<String, String> location;
+  final Map<String, dynamic> location;
 
 //<editor-fold desc="Data Methods">
    const NoiseModel({
@@ -79,7 +79,7 @@ class NoiseModel {
       dateTime: map['dateTime'] as String,
       noiseValue: map['noiseValue'] as double,
       deviceName: map['deviceName'] as String,
-      location: map['location'] as Map<String, String>,
+      location: map['location'] as Map<String, dynamic>,
     );
   }
 
