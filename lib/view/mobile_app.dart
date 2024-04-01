@@ -60,7 +60,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
           print("############## RECEIVED ##############");
           //showDialog(context: context, builder: builder)
         },
-        onError: (error, String? message){},
+        onError: (error){},
         onCounterChanged: (event){}
     );
     noiseMeter = NoiseMeter();

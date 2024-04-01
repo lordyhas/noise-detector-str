@@ -25,7 +25,6 @@ class RealtimeDataController {
 
   RealtimeDataController({
     String refName = "detect_data",
-    //this.database = FirebaseDatabase.instance,
   }):   _alertCounterRef = FirebaseDatabase.instance.ref(refName).child("alert_counter"),
         _messagesRef = FirebaseDatabase.instance.ref(refName).child('info_noise'),
         _error = null ;
@@ -38,8 +37,8 @@ class RealtimeDataController {
 
   Future<void> init({
     void Function(DatabaseEvent event)? onCounterChanged,
-    void Function(FirebaseException exception, String? type)? onError,
-    required void Function(DatabaseEvent event)? onMessageReceived,
+    void Function(FirebaseException exception)? onError,
+    required void Function(DatabaseEvent event) onMessageReceived,
   }) async {
     initialized = true;
 
@@ -53,11 +52,11 @@ class RealtimeDataController {
               debugPrint('##### Temps d\'ecoulé (ms): ${chrono.elapsedMilliseconds} milli sec');
               debugPrint('##### Temps d\'ecoulé: ${chrono.elapsedMicroseconds} Micro sec');
             }
-            onMessageReceived!(event);
+            onMessageReceived(event);
           },
       onError: (Object o) {
         final error = o as FirebaseException;
-        onError!(error, "Message Error");
+        onError!(error);
         _error = error;
         if (kDebugMode) {
           print('Error: ${error.code} ${error.message}');
