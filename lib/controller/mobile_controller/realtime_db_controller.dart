@@ -21,7 +21,7 @@ class RealtimeDataController {
   bool initialized = false;
 
   // Chrono
-  Stopwatch chrono = Stopwatch();
+  final Stopwatch _chrono = Stopwatch();
 
   RealtimeDataController({
     String refName = "detect_data",
@@ -47,10 +47,10 @@ class RealtimeDataController {
     _receiveMessagesSubscription = responseQuery.onChildAdded.listen(
           (DatabaseEvent event) {
             if(kDebugMode){
-              chrono.stop();
+              _chrono.stop();
               debugPrint('Noise saved in db: ${event.snapshot.value}');
-              debugPrint('##### Temps d\'ecoulé (ms): ${chrono.elapsedMilliseconds} milli sec');
-              debugPrint('##### Temps d\'ecoulé: ${chrono.elapsedMicroseconds} Micro sec');
+              debugPrint('##### Temps d\'ecoulé (ms): ${_chrono.elapsedMilliseconds} milli sec');
+              debugPrint('##### Temps d\'ecoulé: ${_chrono.elapsedMicroseconds} Micro sec');
             }
             onMessageReceived(event);
           },
@@ -72,7 +72,7 @@ class RealtimeDataController {
 
   Future<void> sendMessage(NoiseModel data) async {
     if (kDebugMode) {
-      chrono.start();
+      _chrono.start();
       print("************* START CHRONO *********************");
     }
     await _messagesRef.push().set(data.toMap());
