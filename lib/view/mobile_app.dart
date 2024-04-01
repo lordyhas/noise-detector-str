@@ -69,6 +69,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
   @override
   void dispose() {
     _noiseSubscription?.cancel();
+    realtimeData.close();
     super.dispose();
   }
 

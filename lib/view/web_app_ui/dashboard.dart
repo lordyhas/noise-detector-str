@@ -41,6 +41,11 @@ class _WebDashboardState extends State<WebDashboard> {
   bool underline = false;
 
   RealtimeDataController realtimeData = RealtimeDataController();
+  @override
+  void dispose() {
+    realtimeData.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
