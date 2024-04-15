@@ -31,8 +31,12 @@ class _DatatableViewState extends State<DatatableView> {
   void loadData() async {
     var query = await realtimeData.messagesRef.once();
     var data = query.snapshot.value;
+
+
+
     _doctorsDataSource = DoctorDataSource(data: null);
   }
+
 
   @override
   void initState() {
@@ -64,7 +68,7 @@ class _DatatableViewState extends State<DatatableView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Données sur les docteurs'),
+        title: const Text('Données sur les alerts bruit'),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
           future: load(), //as List<Map<String, String>>,
@@ -79,8 +83,12 @@ class _DatatableViewState extends State<DatatableView> {
                   child: SizedBox(
                     height: 200,
                     child: Column(children: [
-                      Icon(Icons.do_not_disturb_alt),
-                      Text("")
+                      Icon(Icons.do_not_disturb_alt, size: 75,),
+                      Text("Aucune données trouvées"),
+                      Text("Something went wrong", style: TextStyle(
+                        color: Colors.deepPurpleAccent,
+                        fontSize: 12,
+                      ),)
                     ],),
                   )
               );
@@ -91,7 +99,7 @@ class _DatatableViewState extends State<DatatableView> {
               padding: const EdgeInsets.all(20.0),
               child: PaginatedDataTable(
 
-                header: const Text('Docteurs'),
+                header: const Text('Enregistrements'),
                 actions: [
                   IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
                   IconButton(

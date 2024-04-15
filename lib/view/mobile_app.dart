@@ -56,11 +56,17 @@ class _MobileHomePageState extends State<MobileHomePage> {
   final Stopwatch _chronoDisplay = Stopwatch();
 
 
-  late final AndroidDeviceInfo androidInfo ;
+  late final AndroidDeviceInfo _androidInfo ;
+  late Position _position;
 
-  void getAndroidInfo() async {
+
+  void getAndroidInfoAndLocation() async {
     AndroidDeviceInfo info = await DeviceInfoPlugin().androidInfo;
-    setState(() => androidInfo = info );
+    Position position = await GPSLocation.myCurrentPosition();
+    setState(() {
+      _position = position;
+      _androidInfo = info;
+    });
   }
 
 
@@ -76,7 +82,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
         onCounterChanged: (event){}
     );
     noiseMeter = NoiseMeter();
-    getAndroidInfo();
+    getAndroidInfoAndLocation();
   }
 
   @override
@@ -101,30 +107,29 @@ class _MobileHomePageState extends State<MobileHomePage> {
   void checkDisturbingNoise(double? value) async {
     double noise = getNoisedB(value);
 
-    Position position = await GPSLocation.myCurrentPosition();
 
-    //const Uuid().v1(),
-    if (noise > 60){
+
+    if (noise > 70){
       if(kDebugMode){
         _chronoDetect.start();
       }
       stopRecording();
       // send all information as NoiseModel to the server
       await realtimeData.sendMessage(NoiseModel(
-        id: androidInfo.id,
+        id: _androidInfo.id,
         dateTime: DateTime.now().toString(),
         noiseValue: noise,
-        deviceName: androidInfo.model,
+        deviceName: _androidInfo.model,
         location: <String, String>{
-          "latitude":"${position.latitude}",
-          "longitude":"${position.longitude}",
+          "latitude":"${_position.latitude}",
+          "longitude":"${_position.longitude}",
         },)
       );
 
       if(kDebugMode){
         _chronoDetect.stop();
-        debugPrint('##### Detection (Temps ecoulé): ${_chronoDetect.elapsedMilliseconds} milli sec');
-        debugPrint('##### Detection (Temps ecoulé): ${_chronoDetect.elapsedMicroseconds} Micro sec');
+        debugPrint('##### SendMessage (Temps ecoulé): ${_chronoDetect.elapsedMilliseconds} milli sec');
+        debugPrint('##### SendMessage (Temps ecoulé): ${_chronoDetect.elapsedMicroseconds} Micro sec');
       }
     }
   }
@@ -142,10 +147,20 @@ class _MobileHomePageState extends State<MobileHomePage> {
     // Create a noise meter, if not already done.
     // Listen to the noise stream.
     //todo : mesurer les bruits ici
-    /*if(kDebugMode){
+    if(kDebugMode){
       _chronoDisplay.start();
-    }*/
-    _noiseSubscription = noiseMeter.noise.listen(onData, onError: onError);
+    }
+    _noiseSubscription = noiseMeter.noise.listen((value) {
+      onData(value);
+      if(kDebugMode){
+        _chronoDisplay.stop();
+        debugPrint('##### Capture bruit (Temps ecoulé): ${_chronoDisplay.elapsedMilliseconds} milli sec');
+        debugPrint('##### Capture bruit (Temps ecoulé): ${_chronoDisplay.elapsedMicroseconds} Micro sec');
+
+      }
+    },
+      onError: onError,
+    );
     setState(() => _isRecording = true);
 
     /*if(kDebugMode){

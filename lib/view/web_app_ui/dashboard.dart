@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:noise_detector_str/model/NoiseModel.dart';
@@ -8,8 +10,6 @@ import 'package:utils_component/utils_component.dart';
 import '../../controller/mobile_controller/realtime_db_controller.dart';
 import '../background_font.dart';
 import 'datatable_view.dart';
-
-
 
 
 const double kMinDimens = 520.0;
@@ -40,7 +40,35 @@ class _WebDashboardState extends State<WebDashboard> {
 
   bool underline = false;
 
+  late StreamSubscription<DatabaseEvent> _counterSubscription;
+  int _counter = 0;
+
+
   RealtimeDataController realtimeData = RealtimeDataController();
+
+  counterAlertUpdate() async {
+    try {
+      final counterSnapshot = await realtimeData.alertCounterRef.get();
+      debugPrint('Connected to directly configured '
+          'database and read${counterSnapshot.value}',);
+    } catch (err) {
+      debugPrint("$err");
+    }
+    _counterSubscription =  realtimeData.alertCounterRef.onValue.listen(
+          (DatabaseEvent event) {
+        setState(() {
+          _counter = (event.snapshot.value ?? 0) as int;
+        });
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    counterAlertUpdate();
+  }
+
   @override
   void dispose() {
     realtimeData.close();
@@ -143,7 +171,7 @@ class _WebDashboardState extends State<WebDashboard> {
                                   constraints: const BoxConstraints(
                                     maxWidth: 200,
                                   ),
-                                  child: Column(
+                                  child: const Column(
                                     children: [
                                       Spacer(),
                                       Text(
@@ -174,16 +202,16 @@ class _WebDashboardState extends State<WebDashboard> {
                                   constraints: const BoxConstraints(
                                     maxWidth: 200,
                                   ),
-                                  child:  const Column(
+                                  child:  Column(
                                     children: [
                                       Spacer(),
-                                      Text(
+                                      const Text(
                                         "Déjà ajouté",
                                         style: TextStyle(
                                             fontSize: 20, color: Colors.white70),
                                       ),
                                       Text(
-                                        "4",
+                                        "$_counter",
                                         style: TextStyle(
                                             fontSize: 28,
                                             fontWeight: FontWeight.bold),
@@ -222,7 +250,7 @@ class _WebDashboardState extends State<WebDashboard> {
                                     children: [
                                       Spacer(),
                                       Text(
-                                        "Verifier",
+                                        "Vérifier",
                                         style: TextStyle(
                                           fontSize: 20,
                                           color: Colors.white,
@@ -429,14 +457,14 @@ class _WebDashboardState extends State<WebDashboard> {
                                     child: Column(
                                       children: [
                                         Text(
-                                          "Frais",
+                                          "Alarme",
                                           style: textStyle,
                                         ),
                                         Text.rich(TextSpan(
                                           children: [
                                             TextSpan(text: "4", style: numStyle),
                                             const TextSpan(
-                                              text: "\$",
+                                              text: "",
                                             )
                                           ],
                                         )),
@@ -511,7 +539,7 @@ class _WebDashboardState extends State<WebDashboard> {
                             //const SizedBox(height: 1, child: Expanded(child: SizedBox(width: 10,),),),
                             const ListTile(
                               title: Text(
-                                "Tab",
+                                "Tableau de signalement",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
