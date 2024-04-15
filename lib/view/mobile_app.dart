@@ -52,18 +52,37 @@ class _MobileHomePageState extends State<MobileHomePage> {
   final ValueNotifier<double> _valueNotifier = ValueNotifier(0);
   final _progress = 90.0;
 
+  final Stopwatch _chronoDetect = Stopwatch();
+  final Stopwatch _chronoDisplay = Stopwatch();
+
+
+  late final AndroidDeviceInfo _androidInfo ;
+  late Position _position;
+
+
+  void getAndroidInfoAndLocation() async {
+    AndroidDeviceInfo info = await DeviceInfoPlugin().androidInfo;
+    Position position = await GPSLocation.myCurrentPosition();
+    setState(() {
+      _position = position;
+      _androidInfo = info;
+    });
+  }
+
+
   @override
   void initState() {
     super.initState();
     realtimeData.init(
         onMessageReceived: (event){
-          print("############## RECEIVED ##############");
+          debugPrint("############## RECEIVED ##############");
           //showDialog(context: context, builder: builder)
         },
         onError: (error){},
         onCounterChanged: (event){}
     );
     noiseMeter = NoiseMeter();
+    getAndroidInfoAndLocation();
   }
 
   @override
@@ -81,31 +100,37 @@ class _MobileHomePageState extends State<MobileHomePage> {
 
 
   void onError(Object error) {
-    if (kDebugMode) {
-      print(error);
-    }
-    stop();
+    debugPrint("$error");
+    stopRecording();
   }
 
   void checkDisturbingNoise(double? value) async {
-    AndroidDeviceInfo androidInfo = await DeviceInfoPlugin().androidInfo;
-    Position position = await GPSLocation.myCurrentPosition();
-
     double noise = getNoisedB(value);
-    if (noise > 60){
-      stop();
+
+
+
+    if (noise > 70){
+      if(kDebugMode){
+        _chronoDetect.start();
+      }
+      stopRecording();
       // send all information as NoiseModel to the server
       await realtimeData.sendMessage(NoiseModel(
-        id: const Uuid().v1(),
+        id: _androidInfo.id,
         dateTime: DateTime.now().toString(),
         noiseValue: noise,
-        deviceName: "${androidInfo.model} - ${androidInfo.serialNumber}",
+        deviceName: _androidInfo.model,
         location: <String, String>{
-          "latitude":"${position.latitude}",
-          "longitude":"${position.longitude}",
-          "state":"", "city":"", "address":""
+          "latitude":"${_position.latitude}",
+          "longitude":"${_position.longitude}",
         },)
       );
+
+      if(kDebugMode){
+        _chronoDetect.stop();
+        debugPrint('##### SendMessage (Temps ecoulé): ${_chronoDetect.elapsedMilliseconds} milli sec');
+        debugPrint('##### SendMessage (Temps ecoulé): ${_chronoDetect.elapsedMicroseconds} Micro sec');
+      }
     }
   }
 
@@ -121,12 +146,31 @@ class _MobileHomePageState extends State<MobileHomePage> {
   Future<void> startRecording() async {
     // Create a noise meter, if not already done.
     // Listen to the noise stream.
-    _noiseSubscription = noiseMeter.noise.listen(onData, onError: onError);
+    //todo : mesurer les bruits ici
+    if(kDebugMode){
+      _chronoDisplay.start();
+    }
+    _noiseSubscription = noiseMeter.noise.listen((value) {
+      onData(value);
+      if(kDebugMode){
+        _chronoDisplay.stop();
+        debugPrint('##### Capture bruit (Temps ecoulé): ${_chronoDisplay.elapsedMilliseconds} milli sec');
+        debugPrint('##### Capture bruit (Temps ecoulé): ${_chronoDisplay.elapsedMicroseconds} Micro sec');
+
+      }
+    },
+      onError: onError,
+    );
     setState(() => _isRecording = true);
+
+    /*if(kDebugMode){
+      _chronoDisplay.stop();
+      print("----------------");
+    }*/
   }
 
   /// Stop sampling.
-  void stop() {
+  void stopRecording() {
     _noiseSubscription?.cancel();
     setState(() => _isRecording = false);
   }
@@ -186,7 +230,6 @@ class _MobileHomePageState extends State<MobileHomePage> {
                         builder: (_, double value, __) => Padding(
                           padding: const EdgeInsets.only(top:0.0),
                           child: Column(
-
                             children: [
                               const Spacer(flex: 2,),
                               Text(value.toStringAsFixed(2),),
@@ -232,7 +275,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
                   backgroundColor: Colors.deepPurple,
 
                 ),
-                onPressed: _isRecording ? stop : startRecording,
+                onPressed: _isRecording ? stopRecording : startRecording,
                 child: Text(_isRecording ? "Stop" : "Record",
                   style: const TextStyle(color: Colors.white),
                 )
@@ -250,7 +293,7 @@ class _MobileHomePageState extends State<MobileHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: _isRecording ? Colors.red : Colors.green,
-        onPressed: _isRecording ? stop : startRecording,
+        onPressed: _isRecording ? stopRecording : startRecording,
         child: _isRecording ? const Icon(Icons.stop) : const Icon(Icons.mic),
       ),
 

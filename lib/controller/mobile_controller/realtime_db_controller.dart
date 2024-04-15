@@ -49,8 +49,8 @@ class RealtimeDataController {
             if(kDebugMode){
               _chrono.stop();
               debugPrint('Noise saved in db: ${event.snapshot.value}');
-              debugPrint('##### Temps d\'ecoulé (ms): ${_chrono.elapsedMilliseconds} milli sec');
-              debugPrint('##### Temps d\'ecoulé: ${_chrono.elapsedMicroseconds} Micro sec');
+              debugPrint('##### Response serveur, Temps d\'ecoulé (ms): ${_chrono.elapsedMilliseconds} milli sec');
+              //debugPrint('##### Temps d\'ecoulé: ${_chrono.elapsedMicroseconds} Micro sec');
             }
             onMessageReceived(event);
           },
@@ -84,3 +84,7 @@ class RealtimeDataController {
     await ref.remove();
   }
 }
+
+
+
+
