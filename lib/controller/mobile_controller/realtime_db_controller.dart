@@ -21,7 +21,8 @@ class RealtimeDataController {
   bool initialized = false;
 
   // Chrono
-  final Stopwatch _chrono = Stopwatch();
+  final Stopwatch _responseTimeUp = Stopwatch();
+  final Stopwatch _sendTimeUp = Stopwatch();
 
   RealtimeDataController({
     String refName = "detect_data",
@@ -40,16 +41,16 @@ class RealtimeDataController {
     void Function(FirebaseException exception)? onError,
     required void Function(DatabaseEvent event) onMessageReceived,
   }) async {
-    initialized = true;
+
 
     final responseQuery = _messagesRef.limitToLast(1);
 
     _receiveMessagesSubscription = responseQuery.onChildAdded.listen(
           (DatabaseEvent event) {
             if(kDebugMode){
-              _chrono.stop();
-              debugPrint('Noise saved in db: ${event.snapshot.value}');
-              debugPrint('##### Response serveur, Temps d\'ecoulé (ms): ${_chrono.elapsedMilliseconds} milli sec');
+              _responseTimeUp.stop();
+              print('Noise saved in db: ${event.snapshot.value}');
+              print('##### Response serveur, Temps d\'ecoulé (ms): ${_responseTimeUp.elapsedMilliseconds} milli sec');
               //debugPrint('##### Temps d\'ecoulé: ${_chrono.elapsedMicroseconds} Micro sec');
             }
             onMessageReceived(event);
@@ -63,6 +64,7 @@ class RealtimeDataController {
         }
       },
     );
+    initialized = true;
   }
 
   void close(){
@@ -72,11 +74,16 @@ class RealtimeDataController {
 
   Future<void> sendMessage(NoiseModel data) async {
     if (kDebugMode) {
-      _chrono.start();
-      print("************* START CHRONO *********************");
+      _responseTimeUp.start();
+      _sendTimeUp.start();
     }
     await _messagesRef.push().set(data.toMap());
     await _alertCounterRef.set(ServerValue.increment(1));
+    if (kDebugMode) {
+      _sendTimeUp.stop();
+      print("##### Response serveur, (Temps d'ecoulé) : ${_responseTimeUp.elapsedMilliseconds} milli sec");
+    }
+
   }
 
   void deleteMessage(DataSnapshot snapshot) async {

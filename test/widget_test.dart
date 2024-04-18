@@ -13,7 +13,7 @@ import 'package:noise_detector_str/view/mobile_app.dart';
 import 'package:noise_detector_str/view/web_app.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Counter smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MobileUIApp());
 
@@ -30,7 +30,7 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Counter smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const WebUIApp());
 

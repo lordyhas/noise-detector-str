@@ -46,10 +46,18 @@ dependencies:
   dashed_circular_progress_bar: ^0.0.6
   circular_seek_bar: ^1.1.1
   geolocator: ^11.0.0
-  flutter_bloc : any
+  flutter_bloc : ^8.1.2
   uuid: ^4.3.3
   #nanoid: ^1.0.0
   device_info_plus: ^9.1.2
+
+  mockito: ^5.4.4
+
+  kdgaugeview: ^1.0.4
+  achievement_view: ^1.0.1
+
+  #connectivity_plus: ^6.0.2
+  connectivity_plus: ^3.0.3
 
 dev_dependencies:
   flutter_test:
